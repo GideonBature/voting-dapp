@@ -1,9 +1,20 @@
 {
   "name": "my-dapp",
   "version": "0.1.0",
+  "main": "./src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GideonBature/voting-dapp/tree/main/dApp"
+  },
+  "author": {
+    "name": "Gideon Bature",
+    "url": "https://github.com/GideonBature"
+  },
   "description": "JS DApp",
   "dependencies": {
-    "ethers": "^6.7.1"
+    "ethers": "^6.7.1",
+    "node": "^20.16.0",
+    "viem": "^2.18.7"
   },
   "devDependencies": {
     "esbuild": "^0.19.2"
@@ -13,7 +24,9 @@
     "start": "ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:5004\" node src/index.js"
   },
   "keywords": [
-    "cartesi"
+    "voting-dapp",
+    "cartesi",
+    "dapp"
   ],
   "license": "MIT"
 }

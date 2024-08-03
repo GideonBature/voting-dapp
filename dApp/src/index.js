@@ -1,18 +1,54 @@
 // XXX even though ethers is not used in the code below, it's very likely
 // it will be used by any DApp, so we are already including it here
+import { ROLLUP_SERVER } from "./shared/config";
+import { hexToString } from "viem";
+import { RollupStateHandler } from "./shared/rollup-state-handler";
+import { controller } from "./controller";
 const { ethers } = require("ethers");
 
-const rollup_server = process.env.ROLLUP_HTTP_SERVER_URL;
+const rollup_server = process.env.ROLLUP_HTTP_SERVER_URL || ROLLUP_SERVER;
 console.log("HTTP rollup_server url is " + rollup_server);
 
 async function handle_advance(data) {
   console.log("Received advance request data " + JSON.stringify(data));
-  return "accept";
+  const payloadRaw = hexToString(data["payload"]);
+  const payload = JSON.parse(payloadRaw);
+  const requestedAction = payload["action"];
+  const providedData = payload["data"];
+
+  const action = controller[requestedAction];
+  if (!action) {
+    return await RollupStateHandler.handleReport({
+      error: `Action '${requestedAction}' not allowed.`,
+    });
+  }
+
+  const controllerResponse = await action(providedData);
+
+  return controllerResponse;
+
+  //return "accept";
 }
 
 async function handle_inspect(data) {
   console.log("Received inspect request data " + JSON.stringify(data));
-  return "accept";
+  const urlParams = hexToString(data["payload"]);
+  const urlParamsSplitted = urlParams.split("/");
+  const requestedAction = urlParamsSplitted[0];
+  const providedData = urlParamsSplitted[1];
+  const action = controller[requestedAction];
+
+  if (!action) {
+    return await RollupStateHandler.handleReport({
+      error: `Action '${requestedAction}' not allowed.`,
+    });
+  }
+
+  const controllerResponse = await action(providedData);
+
+  return controllerResponse;
+
+  // return "accept";
 }
 
 var handlers = {
