@@ -3,8 +3,8 @@
 import { ROLLUP_SERVER } from "./shared/config";
 import { hexToString } from "viem";
 import { RollupStateHandler } from "./shared/rollup-state-handler";
-import { controller } from "./controller";
-const { ethers } = require("ethers");
+import { PollController } from "./controller/poll-controller";
+
 
 const rollup_server = process.env.ROLLUP_HTTP_SERVER_URL || ROLLUP_SERVER;
 console.log("HTTP rollup_server url is " + rollup_server);
@@ -16,7 +16,8 @@ async function handle_advance(data) {
   const requestedAction = payload["action"];
   const providedData = payload["data"];
 
-  const action = controller[requestedAction];
+
+  const action = PollController[requestedAction];
   if (!action) {
     return await RollupStateHandler.handleReport({
       error: `Action '${requestedAction}' not allowed.`,
@@ -24,6 +25,8 @@ async function handle_advance(data) {
   }
 
   const controllerResponse = await action(providedData);
+
+  console.log("Controller response is " + JSON.stringify(controllerResponse));
 
   return controllerResponse;
 
@@ -36,7 +39,8 @@ async function handle_inspect(data) {
   const urlParamsSplitted = urlParams.split("/");
   const requestedAction = urlParamsSplitted[0];
   const providedData = urlParamsSplitted[1];
-  const action = controller[requestedAction];
+
+  const action = PollController[requestedAction];
 
   if (!action) {
     return await RollupStateHandler.handleReport({
