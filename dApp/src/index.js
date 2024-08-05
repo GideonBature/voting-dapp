@@ -3,7 +3,7 @@
 import { ROLLUP_SERVER } from "./shared/config";
 import { hexToString } from "viem";
 import { RollupStateHandler } from "./shared/rollup-state-handler";
-import { PollController } from "./controller/poll-controller";
+import { pollController } from "./controller/poll-controller";
 
 
 const rollup_server = process.env.ROLLUP_HTTP_SERVER_URL || ROLLUP_SERVER;
@@ -17,7 +17,10 @@ async function handle_advance(data) {
   const providedData = payload["data"];
 
 
-  const action = PollController[requestedAction];
+  const action = pollController[requestedAction];
+
+  console.log("Action is " + action);
+
   if (!action) {
     return await RollupStateHandler.handleReport({
       error: `Action '${requestedAction}' not allowed.`,
@@ -35,22 +38,47 @@ async function handle_advance(data) {
 
 async function handle_inspect(data) {
   console.log("Received inspect request data " + JSON.stringify(data));
-  const urlParams = hexToString(data["payload"]);
+  const payload = data["payload"];
+  const urlParams = hexToString(payload);
+  console.info("urlParams is " + urlParams);
   const urlParamsSplitted = urlParams.split("/");
   const requestedAction = urlParamsSplitted[0];
-  const providedData = urlParamsSplitted[1];
+  const providedData = urlParamsSplitted.slice(1);
 
-  const action = PollController[requestedAction];
+  let responseObject = {};
 
-  if (!action) {
+  if (requestedAction === "getAllPolls") {
+    responseObject = await pollController.getAllPolls();
+  } else if (requestedAction === "getPollById") {
+    responseObject = await pollController.getPollById(providedData);
+  } else {
     return await RollupStateHandler.handleReport({
-      error: `Action '${requestedAction}' not allowed.`,
+      error: `Route '${requestedAction}' not implemented.`,
     });
   }
 
-  const controllerResponse = await action(providedData);
+  const report_req = await fetch(rollup_server + "/report", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({payload: stringToHex(responseObject)}),
+  });
 
-  return controllerResponse;
+  // const action = pollController[requestedAction];
+
+  // console.log("action is " + action);
+
+  // if (!action) {
+  //   return await RollupStateHandler.handleReport({
+  //     error: `Action '${requestedAction}' not allowed.`,
+  //   });
+  // }
+
+  // const controllerResponse = await action(providedData);
+  // console.log("Controller response is " + JSON.stringify(controllerResponse));
+
+  // return controllerResponse;
 
   // return "accept";
 }

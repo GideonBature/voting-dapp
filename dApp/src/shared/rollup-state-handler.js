@@ -49,14 +49,11 @@ export class RollupStateHandler {
     static async inspectWrapper(callback) {
         try {
             const result = await callback();
-            const dataFallback = result?.data ?? undefined;
+            const dataFallback = result ?? undefined;
 
-            return {
-                status: 'accept',
-                data: dataFallback
-            };
-        } catch (err) {
-            return this.handleReport(err.message || 'Unknown error');
+            return this.handleReport(dataFallback, 'accept');
+        } catch (error) {
+            return this.handleReport(error);
         }
     }
 
@@ -68,7 +65,8 @@ export class RollupStateHandler {
      * @param {string} [rollupServer=ROLLUP_SERVER] - Rollup server URL.
      * @returns {Promise<{status: string}>}
      */
-    static async handleReport(data, status = 'reject', rollupServer = ROLLUP_SERVER) {
+    static async handleReport(data, status, rollupServer = ROLLUP_SERVER) {
+        let statusFallback = status ?? 'reject';
         const reportResponse = await fetch(`${rollupServer}/report`, {
             method: 'POST',
             headers: {
@@ -80,14 +78,14 @@ export class RollupStateHandler {
         });
         const reportResponseText = await reportResponse.text();
 
-        if (reportResponse.status >= 400 && status === 'accept') {
-            status = 'reject';
+        if (reportResponse.status >= 400 && statusFallback === 'accept') {
+            statusFallback = 'reject';
         }
 
         console.info(`Report generated with status: ${reportResponse.status}.`);
         console.info(`Report response: ${reportResponseText}`);
         console.info(`Report data: ${JSON.stringify(data)}`);
 
-        return { status };
+        return statusFallback;
     }
 }

@@ -2,7 +2,7 @@ import { Poll } from '../model/poll';
 import { pollStorage } from '../database/poll';
 import { RollupStateHandler } from '../shared/rollup-state-handler';
 
-export class PollController {
+class PollController {
     /**
      * ### PollController createPoll
      * @description create a new poll.
@@ -61,22 +61,44 @@ export class PollController {
      * @description get results of a given poll.
      * @param {*} data {pollId: UUID}
      */
-    async getPollResults(data) {
+    // async getPollById(data) {
+    //     return await RollupStateHandler.inspectWrapper(() => {
+    //         const { pollId } = data;
+    //         const poll = pollStorage.getOneById(pollId);
+
+    //         if (!poll) {
+    //             return {
+    //                 status: 'reject',
+    //                 error: 'Poll not found.',
+    //             };
+    //         }
+
+    //         return {
+    //             status: 'accept',
+    //             data: poll.getData(),
+    //         };
+    //     });
+    // }
+
+    async getPollById(data) {
+        const pollId = data[0];
+        const pollRequest = shelfStorage.getOneById(pollId);
+
+        if (!pollRequest?.id)
+            return await RollupStateHandler.handleReport({
+                error: `Poll not found for id '${pollId}'.`,
+            });
+
+        return await RollupStateHandler.inspectWrapper(() => ({
+            status: 'accept',
+            data: pollRequest.getData(),
+
+        }));
+    }
+
+    async getAllPolls() {
         return await RollupStateHandler.inspectWrapper(() => {
-            const { pollId } = data;
-            const poll = pollStorage.getOneById(pollId);
-
-            if (!poll) {
-                return {
-                    status: 'reject',
-                    error: 'Poll not found.',
-                };
-            }
-
-            return {
-                status: 'accept',
-                data: poll.getData(),
-            };
+            pollStorage.getAll();
         });
     }
 }

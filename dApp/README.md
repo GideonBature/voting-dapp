@@ -32,7 +32,7 @@ Here are some packages you need to have installed on your PC:
    ```
 2. Change directory
    ```sh
-   cd voting-dapp
+   cd dApp
    ```
 3. Install NPM packages
    ```sh
@@ -130,7 +130,7 @@ There are these resources available on this dapp:
     ```
 
 ### Inspect handlers 
-* #### getAllShelfs
+* #### getAllPolls
   ```js
     description — get all polls.
   ```
@@ -144,23 +144,77 @@ There are these resources available on this dapp:
                 "payload": "0x..."
             }
         ],
-        "processed_input_count": 2
+        "processed_input_count": 1
     }
   ```
   converted payload sample
   ```json 
     [
-        {
-            "id":"d8c04a7b-e207-4dfb-a1d2-c64e9d09c9e5",
-            "owner":"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-            "createdAt":8034,
-            "items":{}
-        }
+      {
+        "id":"d8c04a7b-e207-4dfb-a1d2-c64e9d09c9e5",
+        "creator":"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "createdAt":8046,
+        "question":"Which programming language should be learned first?",
+        "options":["JavaScript","Python","C++","Java"],
+        "votes":[["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb884842","C++"]]
+      }
     ]
 
   ```
   interact
     - access the cartesi inspect endpoint on your browser
   ```sh 
-  http://localhost:8080/inspect/getAllShelfs
+  http://localhost:8080/inspect/getAllPolls
   ```
+* #### getPollById
+  ```js
+    description — get a poll by given id.
+    param data — shelf id (UUID)
+  ```
+  returned hex sample
+  ```json
+    {
+        "status": "Accepted",
+        "exception_payload": null,
+        "reports": [
+            {
+                "payload": "0x..."
+            }
+        ],
+        "processed_input_count": 1
+    }
+  ```
+  converted payload sample
+  ```json 
+    {
+        {
+        "id":"d8c04a7b-e207-4dfb-a1d2-c64e9d09c9e5",
+        "creator":"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        "createdAt":8046,
+        "question":"Which programming language should be learned first?",
+        "options":["JavaScript","Python","C++","Java"],
+        "votes":[["0xf39Fd6e51aad88F6F4ce6aB8827279cffFb884842","C++"]]
+      }
+    }
+  ```
+  interact
+    - access the cartesi inspect endpoint on your browser
+  ```sh 
+  http://localhost:8080/inspect/getPollById/$pollId
+  ```
+
+## Contributing
+We welcome contributions from the community! If you'd like to contribute to Bshelf, please follow these steps:
+
+- Fork the repository.
+- Create a new branch for your feature or bug fix.
+- Make your changes and commit them with descriptive commit messages.
+- Push your changes to your forked repository.
+- Submit a pull request to the main repository.
+- Please ensure that your code adheres to the project's coding standards and includes appropriate tests.
+
+## License
+Bshelf is released under the MIT License.
+
+## Acknowledgments
+Voting dApp is built on top of the Cartesi platform and utilizes various open-source libraries and tools. I would like to express my gratitude to the developers and contributors of the cartesi rollups and open-source projects.
