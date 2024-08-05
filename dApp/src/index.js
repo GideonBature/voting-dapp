@@ -1,7 +1,7 @@
 // XXX even though ethers is not used in the code below, it's very likely
 // it will be used by any DApp, so we are already including it here
 import { ROLLUP_SERVER } from "./shared/config";
-import { hexToString } from "viem";
+import { hexToString, stringToHex } from "viem";
 import { RollupStateHandler } from "./shared/rollup-state-handler";
 import { pollController } from "./controller/poll-controller";
 
@@ -15,7 +15,7 @@ async function handle_advance(data) {
   const payload = JSON.parse(payloadRaw);
   const requestedAction = payload["action"];
   const providedData = payload["data"];
-
+  
 
   const action = pollController[requestedAction];
 
