@@ -204,7 +204,7 @@ There are these resources available on this dapp:
   ```
 
 ## Contributing
-We welcome contributions from the community! If you'd like to contribute to Bshelf, please follow these steps:
+We welcome contributions from the community! If you'd like to contribute to Voting dApp, please follow these steps:
 
 - Fork the repository.
 - Create a new branch for your feature or bug fix.
@@ -214,7 +214,7 @@ We welcome contributions from the community! If you'd like to contribute to Bshe
 - Please ensure that your code adheres to the project's coding standards and includes appropriate tests.
 
 ## License
-Bshelf is released under the MIT License.
+Voting dApp is released under the MIT License.
 
 ## Acknowledgments
 Voting dApp is built on top of the Cartesi platform and utilizes various open-source libraries and tools. I would like to express my gratitude to the developers and contributors of the cartesi rollups and open-source projects.
